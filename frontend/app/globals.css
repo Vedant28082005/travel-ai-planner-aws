@@ -1,0 +1,16 @@
+.bg {
+  background: url('https://images.unsplash.com/photo-1469474968028-56623f02e42e?auto=format&fit=crop&w=2000&q=80') no-repeat center center/cover;
+  min-height: 100vh;
+}
+
+.overlay {
+  background: rgba(0, 0, 0, 0.6);
+  min-height: 100vh;
+}
+
+.container {
+  display: flex;
+  justify-content: space-between;
+  padding: 80px;
+  gap: 40px;
+}
