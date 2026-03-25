@@ -1,10 +1,23 @@
 version: "3.8"
 
+# 🛑 Shared Logging Configuration to Prevent Disk Sprawl
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "10m"
+    max-file: "3"
+
 services:
   gateway:
     build: ./gateway
     ports:
       - "80:80"
+    restart: always
+    logging: *default-logging
+    deploy:
+      resources:
+        limits:
+          memory: 50M
     depends_on:
       - auth-service
       - ai-service
@@ -18,41 +31,85 @@ services:
       - "3000:3000"
     env_file: .env
     environment:
-      # Expose backend APIs to the frontend via browser or server-side
-      - NEXT_PUBLIC_API_URL=http://localhost:80
+      - AUTH_SERVICE_URL=http://auth-service:8001
+      - AI_SERVICE_URL=http://ai-service:8002
+      - DATA_SERVICE_URL=http://data-service:8003
+      - PDF_SERVICE_URL=http://pdf-service:8005
+    restart: always
+    logging: *default-logging
+    deploy:
+      resources:
+        limits:
+          memory: 300M
 
   auth-service:
     build: ./services/auth-service
     ports:
       - "8001:8001"
     env_file: .env
+    restart: always
+    logging: *default-logging
+    deploy:
+      resources:
+        limits:
+          memory: 120M
 
   ai-service:
     build: ./services/ai-service
     ports:
       - "8002:8002"
     env_file: .env
+    restart: always
+    logging: *default-logging
+    deploy:
+      resources:
+        limits:
+          memory: 150M
 
   data-service:
     build: ./services/data-service
     ports:
       - "8003:8003"
     env_file: .env
+    restart: always
+    logging: *default-logging
+    deploy:
+      resources:
+        limits:
+          memory: 100M
 
   pdf-service:
     build: ./services/pdf-service
     ports:
       - "8005:8005"
     env_file: .env
+    restart: always
+    logging: *default-logging
+    deploy:
+      resources:
+        limits:
+          memory: 150M
 
   user-service:
     build: ./services/user-service
     ports:
       - "8007:8007"
     env_file: .env
+    restart: always
+    logging: *default-logging
+    deploy:
+      resources:
+        limits:
+          memory: 50M
 
   live-status-service:
     build: ./services/live-status-service
     ports:
       - "8006:8006"
     env_file: .env
+    restart: always
+    logging: *default-logging
+    deploy:
+      resources:
+        limits:
+          memory: 80M
