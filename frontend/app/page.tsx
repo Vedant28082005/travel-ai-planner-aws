@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import StatusBadge from './components/StatusBadge';
 
 export default function Home() {
   const [origin, setOrigin] = useState("");
@@ -82,7 +83,7 @@ export default function Home() {
     return (
       <div style={resultWrapper}>
         <h2 style={sectionHeader}>Trip Overview to {result.destination}</h2>
-        
+
         {/* 💰 Budget Stats */}
         <div style={budgetGrid}>
           <div style={statBox}>
@@ -168,8 +169,18 @@ export default function Home() {
 
           {/* LEFT COLUMN: Input & Content */}
           <div style={leftColumn}>
-            <p style={tag}>TRAVEL PLANNING</p>
-            <h1 style={title}>YatraAI</h1>
+            
+            {/* 🆕 HEADER SECTION WITH STATUS BADGE */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
+              <div>
+                <p style={tag}>TRAVEL PLANNING</p>
+                <h1 style={title}>YatraAI</h1>
+              </div>
+              <div style={{ marginTop: '20px' }}>
+                <StatusBadge />
+              </div>
+            </div>
+
             <p style={subtitle}>AI-powered trip orchestration for modern travelers.</p>
 
             <div style={{ marginBottom: "20px" }}>
@@ -242,169 +253,45 @@ export default function Home() {
 }
 
 /* 🎨 STYLES */
-
-const mainLayout = {
-  display: "flex",
-  gap: "40px",
-  padding: "40px",
-  height: "100vh",
-  boxSizing: "border-box" as const,
-};
-
-const leftColumn = {
-  flex: 1,
-  maxWidth: "650px",
-  overflowY: "auto" as const,
-  paddingRight: "20px",
-};
-
+const mainLayout = { display: "flex", gap: "40px", padding: "40px", height: "100vh", boxSizing: "border-box" as const };
+const leftColumn = { flex: 1, maxWidth: "650px", overflowY: "auto" as const, paddingRight: "20px" };
 const tag = { letterSpacing: "2px", fontSize: "12px", color: "#3b82f6" };
 const title = { fontSize: "64px", margin: "10px 0", fontWeight: "bold" };
 const subtitle = { color: "#e5e7eb", lineHeight: "1.6", marginBottom: "20px" };
-
-const card = {
-  padding: "24px",
-  borderRadius: "20px",
-  background: "rgba(255,255,255,0.05)",
-  backdropFilter: "blur(12px)",
-  border: "1px solid rgba(255,255,255,0.1)",
-  marginBottom: "20px"
-};
-
-const input = {
-  width: "100%",
-  marginBottom: "12px",
-  padding: "14px",
-  borderRadius: "10px",
-  border: "1px solid #333",
-  background: "#111",
-  color: "white",
-  outline: "none",
-};
-
-const primaryBtn = {
-  width: "100%",
-  padding: "14px",
-  background: "linear-gradient(135deg, #3b82f6, #2563eb)",
-  color: "white",
-  border: "none",
-  borderRadius: "10px",
-  cursor: "pointer",
-  fontWeight: "bold",
-};
-
+const card = { padding: "24px", borderRadius: "20px", background: "rgba(255,255,255,0.05)", backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.1)", marginBottom: "20px" };
+const input = { width: "100%", marginBottom: "12px", padding: "14px", borderRadius: "10px", border: "1px solid #333", background: "#111", color: "white", outline: "none" };
+const primaryBtn = { width: "100%", padding: "14px", background: "linear-gradient(135deg, #3b82f6, #2563eb)", color: "white", border: "none", borderRadius: "10px", cursor: "pointer", fontWeight: "bold" };
 const btn = { padding: "10px 15px", background: "rgba(255,255,255,0.1)", color: "white", border: "none", borderRadius: "8px", cursor: "pointer" };
 const roleInfo = { marginBottom: "20px", color: "#9ca3af", fontSize: "14px" };
-
-/* 📊 RESULT STYLES */
 const resultWrapper = { marginTop: "30px", paddingBottom: "50px" };
 const sectionHeader = { fontSize: "20px", color: "#3b82f6", margin: "25px 0 15px 0", borderLeft: "4px solid #3b82f6", paddingLeft: "12px" };
-
 const budgetGrid = { display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "12px" };
-const statBox = {
-  background: "#1a1a1a", // Slightly lighter than pure black for depth
-  padding: "15px",
-  borderRadius: "12px",
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  border: "1px solid rgba(255,255,255,0.1)", // Add a subtle border
-};
-
-const statLabel = { 
-  fontSize: "11px", 
-  color: "#d1d5db", // Changed from #9ca3af to a lighter gray
-  textTransform: "uppercase",
-  marginBottom: "4px"
-};
-
-const statValue = { 
-  fontSize: "18px", 
-  fontWeight: "bold", 
-  color: "#10b981", // Brighter Green (Emerald 500)
-};
-
+const statBox = { background: "#1a1a1a", padding: "15px", borderRadius: "12px", display: "flex", flexDirection: "column", alignItems: "center", border: "1px solid rgba(255,255,255,0.1)" } as const;
+const statLabel = { fontSize: "11px", color: "#d1d5db", textTransform: "uppercase", marginBottom: "4px" };
+const statValue = { fontSize: "18px", fontWeight: "bold", color: "#10b981" };
 const itineraryCard = { background: "rgba(255,255,255,0.03)", padding: "20px", borderRadius: "15px", marginBottom: "15px", border: "1px solid rgba(255,255,255,0.05)" };
 const dayBadge = { background: "#2563eb", padding: "4px 10px", borderRadius: "6px", fontSize: "12px", fontWeight: "bold", display: "inline-block", marginBottom: "10px" };
 const itineraryText = { fontSize: "14px", lineHeight: "1.7", color: "#d1d5db" };
-
 const horizontalScroll = { display: "flex", gap: "15px", overflowX: "auto" as const, paddingBottom: "10px" };
-const miniCard = {
-  minWidth: "210px",
-  background: "rgba(255,255,255,0.07)", // Lighter transparent background
-  padding: "18px",
-  borderRadius: "14px",
-  border: "1px solid rgba(255,255,255,0.1)",
-};
-
-const cardTitle = { 
-  fontWeight: "bold", 
-  fontSize: "15px", 
-  marginBottom: "6px",
-  color: "#ffffff" // 🔥 Force text to White
-};
-
-const cardSub = { 
-  fontSize: "13px", 
-  color: "#6ee7b7", // Keep light green, it works well on dark
-  fontWeight: "600"
-};
-
-const cardLoc = { 
-  fontSize: "12px", 
-  color: "#9ca3af", // Light gray for location/details
-  marginTop: "6px" 
-};
-
+const miniCard = { minWidth: "210px", background: "rgba(255,255,255,0.07)", padding: "18px", borderRadius: "14px", border: "1px solid rgba(255,255,255,0.1)" };
+const cardTitle = { fontWeight: "bold", fontSize: "15px", marginBottom: "6px", color: "#ffffff" };
+const cardSub = { fontSize: "13px", color: "#6ee7b7", fontWeight: "600" };
+const cardLoc = { fontSize: "12px", color: "#9ca3af", marginTop: "6px" };
 const tipsBox = { background: "rgba(59, 130, 246, 0.05)", padding: "20px", borderRadius: "12px", border: "1px dashed #3b82f6" };
 const tipText = { fontSize: "13px", color: "#e5e7eb", marginBottom: "8px" };
 const errorCard = { background: "rgba(239, 68, 68, 0.1)", padding: "20px", borderRadius: "12px", color: "#ef4444", border: "1px solid #ef4444" };
-
-/* 📋 LIVE BOARD STYLES */
-const liveBoard = { 
-  width: "320px", 
-  background: "rgba(255,255,255,0.05)", 
-  padding: "24px", 
-  borderRadius: "20px", 
-  border: "1px solid rgba(255,255,255,0.1)", 
-  height: "fit-content",
-  color: "#ffffff" // 🔥 Forces "Live board" title to White
-};
-
-const liveDesc = { 
-  fontSize: "13px", 
-  color: "#d1d5db", // Light gray instead of dark gray
-  marginBottom: "15px" 
-};
+const liveBoard = { width: "320px", background: "rgba(255,255,255,0.05)", padding: "24px", borderRadius: "20px", border: "1px solid rgba(255,255,255,0.1)", height: "fit-content", color: "#ffffff" };
+const liveDesc = { fontSize: "13px", color: "#d1d5db", marginBottom: "15px" };
 const tabs = { display: "flex", gap: "10px", marginBottom: "20px" };
 const tab = { padding: "6px 14px", borderRadius: "20px", background: "rgba(255,255,255,0.05)", color: "#9ca3af", border: "none", fontSize: "12px" };
 const activeTab = { ...tab, background: "#2563eb", color: "white" };
 const scrollArea = { maxHeight: "450px", overflowY: "auto" as const };
 const cardItem = { padding: "16px", borderRadius: "14px", background: "#0a0a0a", marginBottom: "12px", border: "1px solid #1a1a1a" };
 const topRow = { display: "flex", justifyContent: "space-between", alignItems: "center" };
-const price = { 
-  color: "#10b981", // Bright Emerald Green
-  fontWeight: "bold",
-  fontSize: "16px"
-};
-const route = { 
-  fontWeight: "bold", 
-  marginTop: "8px", 
-  fontSize: "15px",
-  color: "#ffffff" // 🔥 Force the "City → City" text to White
-};
-const bottomRow = { 
-  display: "flex", 
-  justifyContent: "space-between", 
-  marginTop: "12px", 
-  fontSize: "12px", 
-  color: "#d1d5db" // Lighter gray for readability
-};
+const price = { color: "#10b981", fontWeight: "bold", fontSize: "16px" };
+const route = { fontWeight: "bold", marginTop: "8px", fontSize: "15px", color: "#ffffff" };
+const bottomRow = { display: "flex", justifyContent: "space-between", marginTop: "12px", fontSize: "12px", color: "#d1d5db" };
 const transportTag = { background: "#f59e0b", padding: "3px 8px", borderRadius: "6px", fontSize: "10px", color: "black", fontWeight: "bold" };
 const vacationTag = { background: "#3b82f6", padding: "3px 8px", borderRadius: "6px", fontSize: "10px", color: "white", fontWeight: "bold" };
-const subTag = { 
-  color: "#6ee7b7", // Light neon green
-  fontSize: "11px",
-  fontWeight: "600"
-};
+const subTag = { color: "#6ee7b7", fontSize: "11px", fontWeight: "600" };
 const time = { opacity: 0.5 };

@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 
 export default function Signup() {
@@ -7,42 +6,33 @@ export default function Signup() {
   const [password, setPassword] = useState("");
 
   const handleSignup = async () => {
-    const res = await fetch("http://127.0.0.1:8001/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    });
-
-    const data = await res.json();
-
-    if (data.message) {
-      alert("Signup successful");
-      window.location.href = "/login";
-    } else {
-      alert("Signup failed");
+    try {
+      const apiUrl = `http://${window.location.hostname}:8001/register`;
+      const res = await fetch(apiUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      
+      if (res.ok) {
+        alert("Signup successful! Please login.");
+        window.location.href = "/login";
+      } else {
+        alert("Signup failed: " + (data.detail || "Unknown error"));
+      }
+    } catch (err) {
+      alert("Network Error: The browser blocked the connection to the Auth API on port 8001! Check your console.");
+      console.error(err);
     }
   };
 
   return (
     <div style={{ padding: 30 }}>
-      <h1>Signup</h1>
-
-      <input
-        placeholder="Email"
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <br />
-
-      <input
-        type="password"
-        placeholder="Password"
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <br />
-
-      <button onClick={handleSignup}>Signup</button>
+      <h1>Sign Up</h1>
+      <input placeholder="Email" onChange={(e) => setEmail(e.target.value)} /><br/>
+      <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} /><br/>
+      <button onClick={handleSignup}>Sign Up</button>
     </div>
   );
 }

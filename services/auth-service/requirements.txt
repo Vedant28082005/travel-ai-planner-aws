@@ -1,7 +1,9 @@
-fastapi>=0.111.0
-uvicorn>=0.30.1
-pydantic>=2.7.4
-pymongo>=4.8.0
-python-dotenv>=1.0.1
-passlib[bcrypt]>=1.7.4
-python-jose[cryptography]>=3.3.0
+fastapi
+uvicorn
+pydantic
+pymongo
+python-dotenv
+passlib[bcrypt]
+python-jose[cryptography]
+PyJWT
+bcrypt==4.0.1

@@ -1,24 +1,23 @@
-FROM node:18-alpine AS builder
+FROM node:20-alpine
+
+# 🔥 Move them HERE (After FROM)
+ARG NEXT_PUBLIC_LIVE_STATUS_URL
+ENV NEXT_PUBLIC_LIVE_STATUS_URL=$NEXT_PUBLIC_LIVE_STATUS_URL
 
 WORKDIR /app
-COPY package.json package-lock.json ./
+
+# Install dependencies
+COPY package.json package-lock.json* ./
 RUN npm ci
 
+# Copy the rest of the code
 COPY . .
+
+# 🏗️ This is where Next.js "bakes" the URL into your JS files
 RUN npm run build
 
-FROM node:18-alpine AS runner
-
-WORKDIR /app
-ENV NODE_ENV production
-ENV PORT 3000
-
-COPY --from=builder /app/package.json .
-COPY --from=builder /app/next.config.ts ./
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
-
 EXPOSE 3000
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
 
-CMD ["node", "server.js"]
+CMD ["npm", "start"]

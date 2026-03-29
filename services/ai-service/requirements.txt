@@ -1,6 +1,7 @@
-fastapi>=0.111.0
-uvicorn>=0.30.1
-pydantic>=2.7.4
-pymongo>=4.8.0
-python-dotenv>=1.0.1
-google-genai>=0.2.2
+fastapi
+uvicorn
+pydantic
+pymongo
+python-dotenv
+google-genai
+google-api-core

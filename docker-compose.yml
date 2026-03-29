@@ -26,7 +26,11 @@ services:
       - frontend
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      # 🔥 CRITICAL: This passes the variable from .env into the Docker build process
+      args:
+        - NEXT_PUBLIC_LIVE_STATUS_URL=${NEXT_PUBLIC_LIVE_STATUS_URL}
     ports:
       - "3000:3000"
     env_file: .env
@@ -102,14 +106,4 @@ services:
         limits:
           memory: 50M
 
-  live-status-service:
-    build: ./services/live-status-service
-    ports:
-      - "8006:8006"
-    env_file: .env
-    restart: always
-    logging: *default-logging
-    deploy:
-      resources:
-        limits:
-          memory: 80M
+# 🚀 live-status-service removed from here because it's now on AWS Lambda!
