@@ -100,4 +100,72 @@ This repository uses a `.gitignore` to prevent sensitive credentials (`.env`) fr
 
 -----
 
-**Would you like me to help you create a "Development Wiki" page for your repo that explains the internal API documentation for each microservice?**
+This is a critical section for your `README.md`. If someone clones your repo, their biggest hurdle will be the **Lambda-to-EC2 handshake**. 
+
+By documenting this, you show your instructor that you understand **Infrastructure as Code (IaC)** concepts—meaning you know how to tell others to rebuild your cloud environment from scratch.
+
+---
+
+### ☁️ AWS Lambda Status Setup Guide
+
+To get the **Live Status Badge** working on a new AWS account, follow these steps to deploy the serverless component and link it to your EC2 instance.
+
+#### 1. Prepare the Container Image (ECR)
+The Lambda runs as a Docker container. You must first push the image to **Amazon ECR**:
+1.  Create an ECR repository named `live-status-service`.
+2.  Authenticate your Docker CLI:
+    ```bash
+    aws ecr get-login-password --region <YOUR_REGION> | docker login --username AWS --password-stdin <ACCOUNT_ID>.dkr.ecr.<YOUR_REGION>.amazonaws.com
+    ```
+3.  Build and Push the image:
+    ```bash
+    docker build -t live-status-service ./services/live-status-service
+    docker tag live-status-service:latest <ACCOUNT_ID>.dkr.ecr.<YOUR_REGION>.amazonaws.com/live-status-service:latest
+    docker push <ACCOUNT_ID>.dkr.ecr.<YOUR_REGION>.amazonaws.com/live-status-service:latest
+    ```
+
+#### 2. Create the Lambda Function
+1.  In the AWS Console, create a new function: **"Create from Container Image."**
+2.  Select the image you just pushed to ECR.
+3.  **Critical: Architecture:** Ensure the architecture matches your build (likely `x86_64` for EC2/Standard builds).
+4.  **Function URL:** Go to **Configuration > Function URL** and create a URL with **Auth type: NONE**.
+
+#### 3. Fix the CORS Policy
+Browsers will block the status badge if CORS isn't configured. Run this command to allow your EC2 IP to fetch the status:
+```bash
+aws lambda update-function-url-config \
+    --function-name live-status-lambda \
+    --cors '{
+        "AllowOrigins": ["*"],
+        "AllowMethods": ["*"],
+        "AllowHeaders": ["*"],
+        "MaxAge": 3600
+    }'
+```
+
+#### 4. Update Frontend Environment
+The Next.js frontend "bakes" the Lambda URL into the code during the build process.
+1.  Open your `.env` file on the EC2 instance.
+2.  Add the URL (ensure it ends with `/status`):
+    ```text
+    NEXT_PUBLIC_LIVE_STATUS_URL=https://<YOUR_UNIQUE_ID>.lambda-url.<REGION>.on.aws/status
+    ```
+3.  **Force Rebuild:** You must rebuild the frontend container for the changes to take effect:
+    ```bash
+    docker compose build --no-cache frontend
+    docker compose up -d frontend
+    ```
+
+#### 5. EC2 Security Groups (Optional for Advanced Pinging)
+If you upgrade the Lambda to ping internal microservices:
+* Go to **EC2 > Security Groups**.
+* Add **Inbound Rules** for ports `8001, 8002, 8003` to allow traffic from the Lambda's IP range (or `0.0.0.0/0` for testing).
+
+---
+
+### 💡 Why this setup?
+This architecture uses **Independent Lifecycle Management**. The frontend and core services live on the EC2 for persistence, while the status monitor is **Serverless**. This ensures that even if the EC2 hits a "Memory Out" error, the Status Badge remains operational to provide system feedback to the user.
+
+---
+
+
