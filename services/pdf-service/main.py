@@ -28,14 +28,13 @@ def create_table(data_list, header):
     """Helper to create formatted tables for logistics"""
     if not data_list:
         return None
-    
+
     # Create Table Data
     table_data = [header]
     for item in data_list:
-        # Extract values based on header keys
         row = [str(val) for val in item.values()][:len(header)]
         table_data.append(row)
-    
+
     # Create Table
     t = Table(table_data, colWidths=[120, 100, 80, 120])
     t.setStyle(TableStyle([
@@ -57,7 +56,7 @@ def generate_pdf(data: dict = Body(...)):
         buffer = BytesIO()
         doc = SimpleDocTemplate(buffer, pagesize=A4)
         styles = getSampleStyleSheet()
-        
+
         # Custom Styles
         title_style = ParagraphStyle('TitleStyle', parent=styles['Title'], fontSize=24, textColor=colors.HexColor("#1f4e79"), spaceAfter=20)
         h2_style = ParagraphStyle('H2Style', parent=styles['Heading2'], fontSize=16, textColor=colors.HexColor("#2e75b6"), spaceBefore=15, spaceAfter=10)
@@ -98,10 +97,10 @@ def generate_pdf(data: dict = Body(...)):
 
         doc.build(content)
         pdf_bytes = buffer.getvalue()
-        
+
         # AWS S3 Upload Logic
         file_name = f"travel_plan_{uuid.uuid4().hex}.pdf"
-        
+
         try:
             s3_client.put_object(
                 Bucket=BUCKET_NAME,
@@ -109,23 +108,26 @@ def generate_pdf(data: dict = Body(...)):
                 Body=pdf_bytes,
                 ContentType='application/pdf'
             )
-            
-            # Generate Pre-signed URL
+
+# Generate Pre-signed URL
             presigned_url = s3_client.generate_presigned_url(
                 'get_object',
-                Params={'Bucket': BUCKET_NAME, 'Key': file_name},
+                Params={
+                    'Bucket': BUCKET_NAME, 
+                    'Key': file_name,
+                    'ResponseContentDisposition': 'attachment; filename="YatraAI_Travel_Plan.pdf"'
+                },
                 ExpiresIn=3600 # 1 hour
             )
-            
-            return JSONResponse(status_code=200, content={"url": presigned_url})
-            
+            # Return the URL explicitly inside the JSON payload
+            return JSONResponse(status_code=200, content={"pdf_url": presigned_url})
+
         except NoCredentialsError:
             print("❌ AWS Credentials not found! Implement local fallback or check .env.")
-            # For local tests without AWS credentials, you can just save to local disk
             with open(file_name, "wb") as f:
                 f.write(pdf_bytes)
-            return JSONResponse(status_code=500, content={"error": "AWS Credentials Missing. File saved locally successfully.", "local_file": file_name})
-            
+            return JSONResponse(status_code=500, content={"error": "AWS Credentials Missing. File saved locally.", "local_file": file_name})
+
     except Exception as e:
         print("PDF ERROR:", e)
         return JSONResponse(status_code=500, content={"error": str(e)})

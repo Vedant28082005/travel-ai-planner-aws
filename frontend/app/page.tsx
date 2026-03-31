@@ -10,6 +10,7 @@ export default function Home() {
   const [userType, setUserType] = useState("guest");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
 
   // 🔥 JWT ROLE INITIALIZATION
   useEffect(() => {
@@ -35,6 +36,7 @@ export default function Home() {
 
     setLoading(true);
     setResult(null);
+    setPdfUrl(null); // Reset PDF URL on new submission
 
     try {
       const headers: any = { "Content-Type": "application/json" };
@@ -46,23 +48,17 @@ export default function Home() {
         body: JSON.stringify({ origin, destination, days }),
       });
 
-      const contentType = res.headers.get("content-type");
-
-      // 🟣 HANDLE PREMIUM PDF DOWNLOAD
-      if (contentType?.includes("application/pdf")) {
-        const blob = await res.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `${destination}_Travel_Plan.pdf`;
-        a.click();
-        setLoading(false);
-        return;
-      }
-
-      // 🟢 HANDLE JSON DATA (Guest/Free/Premium)
+      // 🟢 1. RENDER THE UI FOR EVERYONE
       const data = await res.json();
       setResult(data);
+
+      // 🟣 2. HANDLE PREMIUM PDF DOWNLOAD
+      // Instead of forcing a popup, we just save the secure AWS link to state
+      const pdfLink = data.pdf_url || data.url;
+      if (pdfLink) {
+        setPdfUrl(pdfLink);
+      }
+
     } catch (err) {
       console.error(err);
       setResult({ error: "Service unavailable. Please try again later." });
@@ -83,6 +79,17 @@ export default function Home() {
     return (
       <div style={resultWrapper}>
         <h2 style={sectionHeader}>Trip Overview to {result.destination}</h2>
+
+        {/* 📄 NEW: Premium PDF Download Button */}
+        {pdfUrl && (
+          <div style={{ marginBottom: "25px" }}>
+            <a href={pdfUrl} target="_blank" rel="noopener noreferrer" download>
+              <button style={{...primaryBtn, background: "linear-gradient(135deg, #10b981, #059669)"}}>
+                📄 Download Premium PDF Itinerary
+              </button>
+            </a>
+          </div>
+        )}
 
         {/* 💰 Budget Stats */}
         <div style={budgetGrid}>
@@ -169,7 +176,7 @@ export default function Home() {
 
           {/* LEFT COLUMN: Input & Content */}
           <div style={leftColumn}>
-            
+
             {/* 🆕 HEADER SECTION WITH STATUS BADGE */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
               <div>
